@@ -1,2 +1,3 @@
-/spells_reader_env
+/venv
+/__pycache__
 players_handbook_ptbr.pdf
