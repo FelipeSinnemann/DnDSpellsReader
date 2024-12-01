@@ -17,12 +17,13 @@ def removeDoubleSpaces(string):
 pdfFile = open('players_handbook_ptbr.pdf', 'rb')
 
 pdf = PyPDF2.PdfReader(pdfFile)
+spellsPages = pdf.pages[213:289]
 
 parts = []
 
 spellsString = ''
 
-for page in [pdf.pages[213], pdf.pages[215]]:
+for page in spellsPages:
     page.extract_text(visitor_text=visitorBody)
 
 spellsString += "".join(parts)
@@ -34,4 +35,5 @@ spells = SpellsInterpreter.getSpellsObjects(spellsArray)
 
 for spell in spells:
     print(spell)
+    print("------------------")
     print("\n")
