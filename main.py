@@ -24,8 +24,8 @@ spellsString = ''
 
 for page in [pdf.pages[213], pdf.pages[215]]:
     page.extract_text(visitor_text=visitorBody)
-    spellsString += "".join(parts)
 
+spellsString += "".join(parts)
 spellsString = removeDoubleSpaces(spellsString)
 
 spellsArray = SpellsInterpreter.splitSpells(spellsString)
