@@ -9,8 +9,15 @@ def splitSpells(string):
 def getSpellsObjects(spellsArray):
     spellsObjectsArray = []
     for spell in spellsArray:
-        spellsObjectsArray.append(__getSpellInfo(spell))
-    
+        if(spell == ' ' or spell == ' \n '):
+            continue
+
+        isValidSpell = __getSpellInfo(spell)
+        if(isValidSpell):
+            spellsObjectsArray.append(isValidSpell)
+        else:
+            spellsObjectsArray[-1].setSpecialDescription(adictionalDescription = spell)
+            
     return spellsObjectsArray
 
 
@@ -18,12 +25,17 @@ def __getSpellInfo(spellString):
     infos = spellString.split('\n')
     
     for index, info in enumerate(infos):
-        if(info.find('Duração :') > -1):
+        if(info.find('Duração :') != -1):
             headerFinalIndex = index
 
-    """ for a in infos:
-        print(a)
-    print('\n') """
+    if('headerFinalIndex' not in locals()):
+       return False
+    
+    if(infos[0] == ' '):
+        infos.pop(0)
+        infos[0] = infos[0][1:-1]
+        headerFinalIndex -= 1
+
     name = infos[0].lower().title()
     spellTipeInfos = __getSpellTipeInfo(infos[1]) 
     description = ''
@@ -34,9 +46,15 @@ def __getSpellInfo(spellString):
     spell = SpellClass(name, spellTipeInfos['school'], spellTipeInfos['level'], spellTipeInfos['ritual'], description)
     return spell
 
+
 def __getSpellTipeInfo(spellTipeString):
-    stringParts = spellTipeString.split('nível de ')
-    level = int(stringParts[0][0])
+    if(spellTipeString.find('Truque') != -1):
+        stringParts = spellTipeString.split('de ')
+        level = 0
+    else:
+        stringParts = spellTipeString.split('nível de ')
+        level = int(stringParts[0][0])
+
     stringParts = stringParts[1].split(' ')
     ritual = False
 
