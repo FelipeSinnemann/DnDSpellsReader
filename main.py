@@ -1,8 +1,12 @@
 import PyPDF2
 import os
 import SpellsInterpreter
+import time
+import dotenv
+from GeminiAiClass import GeminiAiClass
 
 os.system('cls')
+dotenv.load_dotenv()
 
 """ ESTUDAR """
 def visitorBody(text, cm, tm, fontDict, fontSize):
@@ -33,7 +37,19 @@ spellsArray = SpellsInterpreter.splitSpells(spellsString)
 
 spells = SpellsInterpreter.getSpellsObjects(spellsArray)
 
+geminiAi = GeminiAiClass(os.environ['GEMINI_API_KEY'])
+
 for spell in spells:
+    spell.name = geminiAi.correctText(spell.name)
+    time.sleep(5)
+    spell.description = geminiAi.correctText(spell.description)
+
     print(spell)
     print("------------------")
     print("\n")
+
+    time.sleep(5)
+
+geminiAi.finish()
+
+print("=========== It's over ===========")
