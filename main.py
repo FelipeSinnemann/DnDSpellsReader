@@ -14,7 +14,7 @@ def visitorBody(text, cm, tm, fontDict, fontSize):
     if y > 50:
         parts.append(text)
 
-def removeDoubleSpaces(string):
+def removeDoubleSpaces(string: str) -> str:
     string = string.replace('  ', ' ')
     return string
 

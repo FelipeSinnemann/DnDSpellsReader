@@ -1,12 +1,12 @@
 from SpellClass import SpellClass
 
-def splitSpells(string):
+def splitSpells(string: str) -> list:
     spells = string.split('\n \n')
     spells.pop(0)
     return spells
 
 
-def getSpellsObjects(spellsArray):
+def getSpellsObjects(spellsArray: list) -> list:
     spellsObjectsArray = []
     for spell in spellsArray:
         if(spell == ' ' or spell == ' \n '):
@@ -21,7 +21,7 @@ def getSpellsObjects(spellsArray):
     return spellsObjectsArray
 
 
-def __getSpellInfo(spellString):
+def __getSpellInfo(spellString: str) -> SpellClass:
     infos = spellString.split('\n')
     
     for index, info in enumerate(infos):
@@ -47,7 +47,7 @@ def __getSpellInfo(spellString):
     return spell
 
 
-def __getSpellTipeInfo(spellTipeString):
+def __getSpellTipeInfo(spellTipeString: str) -> dict :
     if(spellTipeString.find('Truque') != -1):
         stringParts = spellTipeString.split('de ')
         level = 0

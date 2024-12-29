@@ -1,5 +1,5 @@
 class SpellClass():
-    def __init__(self, name = None, school = None, level = None, ritual = None, description = None, specialDescription = False) -> None:
+    def __init__(self, name: str = None, school: str = None, level: int = None, ritual: bool = None, description: str = None, specialDescription: bool = False) -> None:
         self.name = name
         self.school = school
         self.level = level
@@ -7,10 +7,10 @@ class SpellClass():
         self.description = description
         self.specialDescription = specialDescription
     
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}\nLevel: {self.level}\nSchool: {self.school}\nRitual: {self.ritual}\nDescription: {self.description}"
     
-    def setSpecialDescription(self, adictionalDescription):
+    def setSpecialDescription(self, adictionalDescription: str) -> None:
         self.specialDescription = True
         newDescriptionPiece = ''
         
