@@ -3,10 +3,14 @@ import os
 import SpellsInterpreter
 import time
 import dotenv
+import argparse
 from GeminiAiClass import GeminiAiClass
 
 os.system('cls')
 dotenv.load_dotenv()
+parser = argparse.ArgumentParser()
+parser.add_argument('-ai', action='store_true', help='Utilizar melhoria de texto por IA')
+args = parser.parse_args()
 
 """ ESTUDAR """
 def visitorBody(text, cm, tm, fontDict, fontSize):
@@ -37,19 +41,20 @@ spellsArray = SpellsInterpreter.splitSpells(spellsString)
 
 spells = SpellsInterpreter.getSpellsObjects(spellsArray)
 
-geminiAi = GeminiAiClass(os.environ['GEMINI_API_KEY'])
+if(args.ai):
+    geminiAi = GeminiAiClass(os.environ['GEMINI_API_KEY'])
+
+    for spell in spells:
+        spell.name = geminiAi.correctText(spell.name)
+        time.sleep(5)
+        spell.description = geminiAi.correctText(spell.description)
+        time.sleep(5)
+
+    geminiAi.finish()
 
 for spell in spells:
-    spell.name = geminiAi.correctText(spell.name)
-    time.sleep(5)
-    spell.description = geminiAi.correctText(spell.description)
-
     print(spell)
     print("------------------")
     print("\n")
-
-    time.sleep(5)
-
-geminiAi.finish()
 
 print("=========== It's over ===========")

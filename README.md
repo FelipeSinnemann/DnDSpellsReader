@@ -30,4 +30,4 @@ Install google-generativeai<br/>
 Paste the PDF of D&D 5e Players Handbook PTBR version in main folder (default name "players_handbook_ptbr.pdf")
 <br/>
 
-Create .env file and put your Gemini API key in the `GEMINI_API_KEY` variable
+Create .env file and put your Gemini API key in the `GEMINI_API_KEY` variable (only if you want to use AI text improvement using `-ai` parameter)
