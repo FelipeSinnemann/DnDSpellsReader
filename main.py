@@ -12,7 +12,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-ai', action='store_true', help='Utilizar melhoria de texto por IA')
 args = parser.parse_args()
 
-""" ESTUDAR """
 def visitorBody(text, cm, tm, fontDict, fontSize):
     y = tm[5]
     if y > 50:
