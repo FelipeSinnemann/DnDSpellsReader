@@ -23,28 +23,55 @@ def getSpellsObjects(spellsArray: list) -> list:
 
 def __getSpellInfo(spellString: str) -> SpellClass:
     infos = spellString.split('\n')
+
+    if(infos[0] == ' '):
+        infos.pop(0)
+        infos[0] = infos[0][1:-1]
     
     for index, info in enumerate(infos):
-        if(info.find('Duração :') != -1):
+        splitedInfo = __getRawInfo(info)
+        if(splitedInfo == False):
+            continue
+
+        if(__verifyWordsCompatibility('Tempo de Conjuração', splitedInfo['firstString'])):
+            castingTimeIndex = index
+            continue
+        if(__verifyWordsCompatibility('Alcance', splitedInfo['firstString'])):
+            rangeIndex = index
+            continue
+        if(__verifyWordsCompatibility('Componentes', splitedInfo['firstString'])):
+            componentsIndex = index
+            continue
+        if(__verifyWordsCompatibility('Duração', splitedInfo['firstString'])):
+            durationIndex = index
             headerFinalIndex = index
+            continue
 
     if('headerFinalIndex' not in locals()):
        return False
     
-    if(infos[0] == ' '):
-        infos.pop(0)
-        infos[0] = infos[0][1:-1]
-        headerFinalIndex -= 1
-
+    if('rangeIndex' not in locals()):
+       index = infos[castingTimeIndex].find('Alcance')
+       if(index != -1):
+           infos.insert(castingTimeIndex+1, infos[castingTimeIndex][index:])
+           infos[castingTimeIndex] = infos[castingTimeIndex][:index]
+           rangeIndex = castingTimeIndex+1
+           componentsIndex = componentsIndex+1
+           durationIndex = durationIndex+1
+           headerFinalIndex = headerFinalIndex+1
+           
+    
     name = infos[0].lower().title().rstrip()
     spellTipeInfos = __getSpellTipeInfo(infos[1])
-    castingTime = __getSpellCastingTime(infos[2])
-    range = __getSpellRange(infos[3])
+    castingTime = __getSpellCastingTime(infos[castingTimeIndex:rangeIndex])
 
-    componentsIndex = next((index for index, item in enumerate(infos) if "Componentes" in item), -1)
-    durationIndex = next((index for index, item in enumerate(infos) if "Duração" in item), -1)
+    if('componentsIndex' not in locals()):
+        range = __getSpellRange(infos[rangeIndex:durationIndex])
+        components = {"verbal": False, "somatic": False, "material": False, "materialString": None}
+    else:
+        range = __getSpellRange(infos[rangeIndex:componentsIndex])
+        components = __getSpellComponents(__getSpellInfoString(infos[componentsIndex:durationIndex]))
 
-    components = __getSpellComponents(__getSpellComponentsString(infos[componentsIndex:durationIndex]))
     duration = __getSpellDuration(infos[durationIndex])
     description = ''
 
@@ -85,14 +112,14 @@ def __getSpellTipeInfo(string: str) -> dict :
     
     return {"level": level, "school": school, "ritual": ritual}
 
-def __getSpellCastingTime(string: str) -> str :
-    return __getRawInfo(string)
+def __getSpellCastingTime(infos: list) -> str :
+    return __getRawInfo(__getSpellInfoString(infos))['secondString']
 
-def __getSpellRange(string: str) -> str :
-    return __getRawInfo(string)
+def __getSpellRange(infos: list) -> str :
+    return __getRawInfo(__getSpellInfoString(infos))['secondString']
 
 def __getSpellComponents(string: str) -> dict :
-    componentsString = __getRawInfo(string)
+    componentsString = __getRawInfo(string)['secondString']
 
     verbal = componentsString.find('V') != -1
     somatic = componentsString.find('S') != -1
@@ -101,19 +128,19 @@ def __getSpellComponents(string: str) -> dict :
     if(material):
         parts = componentsString.split("(")
         materialString = parts[1]
-        materialString = materialString.split(")")[0].rstrip()
+        materialString = materialString.split(")")[0].rstrip().capitalize()
 
     return {"verbal": verbal, "somatic": somatic, "material": material, "materialString": materialString}
 
-def __getSpellComponentsString(infosComponents: list) -> str :
-    componentsInfo = ''
-    for info in infosComponents:
-        componentsInfo += info
+def __getSpellInfoString(infos: list) -> str :
+    infoString = ''
+    for info in infos:
+        infoString += info
 
-    return componentsInfo
+    return infoString
 
 def __getSpellDuration(string: str) -> dict :
-    durationString = __getRawInfo(string)
+    durationString = __getRawInfo(string)['secondString']
 
     concentration = durationString.find('Concentração') != -1
 
@@ -121,8 +148,26 @@ def __getSpellDuration(string: str) -> dict :
         durationString = durationString.split("até ")[1]
 
     return {"concentration": concentration, "duration": durationString}
+    
 
-def __getRawInfo(string: str) -> str :
-    stringParts = string.split(' : ')
+def __getRawInfo(string: str) -> dict :
+    if(string.find(': ') == -1):
+        return False
+    stringParts = string.split(': ')
+   
+    return {"firstString": stringParts[0].rstrip(), "secondString": stringParts[1].rstrip()}
 
-    return stringParts[1].rstrip()
+def __verifyWordsCompatibility(baseString: str, stringToVerify: str):
+    for i in range(len(stringToVerify)):
+        try:
+            if(i > len(baseString)-1 and i > len(stringToVerify)-1):
+                continue
+            if(stringToVerify[i] == baseString[i]):
+                continue
+
+            if(stringToVerify[i] == ' ' and stringToVerify[i+1] == baseString[i]):
+                stringToVerify = stringToVerify[:i] + stringToVerify[i+1:]
+        except:
+            return False
+
+    return stringToVerify == baseString
